@@ -115,7 +115,7 @@ struct UploadView: View {
                let musicxmlPath = jsonResponse["musicxml_path"] as? String {
 
                 DispatchQueue.main.async {
-                    apiResponse = "Success: File saved to \(musicxmlPath)"
+                    apiResponse = "Success: File downloaded successfully!"
                 }
 
                 // Download and save the MusicXML file
@@ -136,14 +136,13 @@ struct UploadView: View {
             return
         }
 
-        let destinationURL = FileManager.default.temporaryDirectory.appendingPathComponent(fileURL.lastPathComponent)
-
         URLSession.shared.downloadTask(with: fileURL) { location, response, error in
             if let location = location {
                 do {
+                    let destinationURL = FileManager.default.temporaryDirectory.appendingPathComponent(fileURL.lastPathComponent)
                     try FileManager.default.moveItem(at: location, to: destinationURL)
                     DispatchQueue.main.async {
-                        apiResponse = "File saved to: \(destinationURL.path)"
+                        apiResponse = "Success: File downloaded successfully!"
                     }
                 } catch {
                     DispatchQueue.main.async {
