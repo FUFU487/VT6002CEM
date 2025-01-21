@@ -143,11 +143,16 @@ struct UploadView: View {
 
                 DispatchQueue.main.async {
                     // 保存 MusicXML 文件
-                    apiResponse = "Success: File and image saved successfully in the app!"
                     saveToAppDirectory(from: musicxmlPath)
+
+                    // 保存處理後的圖片到相同目錄
+                    if let imageName = URL(string: musicxmlPath)?.deletingPathExtension().lastPathComponent {
+                        saveImageToAppDirectory(image: dewarpedImage, withName: "\(imageName)_processed.jpg")
+                    }
 
                     // 更新顯示處理後的圖像
                     processedImage = dewarpedImage
+                    apiResponse = "Success: File and image saved successfully in the app!"
                 }
             } else {
                 DispatchQueue.main.async {
@@ -192,6 +197,23 @@ struct UploadView: View {
                 }
             }
         }.resume()
+    }
+
+    func saveImageToAppDirectory(image: UIImage, withName name: String) {
+        guard let data = image.jpegData(compressionQuality: 0.8) else { return }
+        let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        let filePath = documentsURL.appendingPathComponent(name)
+
+        do {
+            try data.write(to: filePath)
+            DispatchQueue.main.async {
+                apiResponse = "Image saved to \(filePath.lastPathComponent)"
+            }
+        } catch {
+            DispatchQueue.main.async {
+                apiResponse = "Error saving image: \(error.localizedDescription)"
+            }
+        }
     }
 }
 
