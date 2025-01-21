@@ -5,10 +5,8 @@
 //  Created by Vincent on 20/1/2025.
 //
 
-
 import SwiftUI
 import UIKit
-
 
 struct UploadView: View {
     @State private var selectedImage: UIImage? = nil
@@ -87,6 +85,7 @@ struct UploadView: View {
         let url = URL(string: "http://127.0.0.1:5000/process-image")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
+        request.timeoutInterval = 300 // 设置超时为 300 秒 (5 分钟)
 
         let boundary = UUID().uuidString
         request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
@@ -112,9 +111,48 @@ struct UploadView: View {
                 return
             }
 
-            if let data = data, let responseString = String(data: data, encoding: .utf8) {
+            if let data = data, let jsonResponse = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+               let musicxmlPath = jsonResponse["musicxml_path"] as? String {
+
                 DispatchQueue.main.async {
-                    apiResponse = responseString
+                    apiResponse = "Success: File saved to \(musicxmlPath)"
+                }
+
+                // Download and save the MusicXML file
+                downloadMusicXML(from: musicxmlPath)
+            } else {
+                DispatchQueue.main.async {
+                    apiResponse = "Error: Invalid response from server"
+                }
+            }
+        }.resume()
+    }
+
+    func downloadMusicXML(from path: String) {
+        guard let fileURL = URL(string: "http://127.0.0.1:5000/\(path)") else {
+            DispatchQueue.main.async {
+                apiResponse = "Error: Invalid file URL"
+            }
+            return
+        }
+
+        let destinationURL = FileManager.default.temporaryDirectory.appendingPathComponent(fileURL.lastPathComponent)
+
+        URLSession.shared.downloadTask(with: fileURL) { location, response, error in
+            if let location = location {
+                do {
+                    try FileManager.default.moveItem(at: location, to: destinationURL)
+                    DispatchQueue.main.async {
+                        apiResponse = "File saved to: \(destinationURL.path)"
+                    }
+                } catch {
+                    DispatchQueue.main.async {
+                        apiResponse = "Error saving file: \(error.localizedDescription)"
+                    }
+                }
+            } else if let error = error {
+                DispatchQueue.main.async {
+                    apiResponse = "Download error: \(error.localizedDescription)"
                 }
             }
         }.resume()
