@@ -13,6 +13,7 @@ struct MyFilesView: View {
     @State private var selectedFile: URL? = nil
     @State private var isRenaming = false
     @State private var newFileName: String = ""
+    @State private var isConfirmingDeletion = false
 
     var body: some View {
         NavigationView {
@@ -38,6 +39,14 @@ struct MyFilesView: View {
                                 Image(systemName: "icloud.and.arrow.up")
                                     .foregroundColor(.blue)
                             }
+
+                            Button(action: {
+                                selectedFile = file
+                                isConfirmingDeletion = true
+                            }) {
+                                Image(systemName: "trash")
+                                    .foregroundColor(.red)
+                            }
                         }
                     }
                 }
@@ -52,6 +61,19 @@ struct MyFilesView: View {
                             .padding()
 
                         Spacer()
+
+                        Button(action: {
+                            isConfirmingDeletion = true
+                        }) {
+                            Text("Delete File")
+                                .font(.headline)
+                                .foregroundColor(.white)
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(Color.red)
+                                .cornerRadius(10)
+                        }
+                        .padding(.horizontal)
                     }
                     .padding()
                     .navigationTitle("Rename File")
@@ -73,6 +95,18 @@ struct MyFilesView: View {
                     }
                 }
             }
+            .alert(isPresented: $isConfirmingDeletion) {
+                Alert(
+                    title: Text("Confirm Deletion"),
+                    message: Text("Are you sure you want to delete this file?"),
+                    primaryButton: .destructive(Text("Delete")) {
+                        if let file = selectedFile {
+                            deleteFile(file: file)
+                        }
+                    },
+                    secondaryButton: .cancel()
+                )
+            }
         }
     }
 
@@ -93,6 +127,15 @@ struct MyFilesView: View {
             loadFiles()
         } catch {
             print("Error renaming file: \(error.localizedDescription)")
+        }
+    }
+
+    func deleteFile(file: URL) {
+        do {
+            try FileManager.default.removeItem(at: file)
+            loadFiles()
+        } catch {
+            print("Error deleting file: \(error.localizedDescription)")
         }
     }
 
