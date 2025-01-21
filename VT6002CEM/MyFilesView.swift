@@ -39,14 +39,6 @@ struct MyFilesView: View {
                                 Image(systemName: "icloud.and.arrow.up")
                                     .foregroundColor(.blue)
                             }
-
-                            Button(action: {
-                                selectedFile = file
-                                isConfirmingDeletion = true
-                            }) {
-                                Image(systemName: "trash")
-                                    .foregroundColor(.red)
-                            }
                         }
                     }
                 }
