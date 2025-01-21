@@ -139,7 +139,8 @@ struct UploadView: View {
         URLSession.shared.downloadTask(with: fileURL) { location, response, error in
             if let location = location {
                 do {
-                    let destinationURL = FileManager.default.temporaryDirectory.appendingPathComponent(fileURL.lastPathComponent)
+                    let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+                    let destinationURL = documentsURL.appendingPathComponent(fileURL.lastPathComponent)
                     try FileManager.default.moveItem(at: location, to: destinationURL)
                     DispatchQueue.main.async {
                         apiResponse = "Success: File downloaded successfully!"
