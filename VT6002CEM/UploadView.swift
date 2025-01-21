@@ -115,11 +115,11 @@ struct UploadView: View {
                let musicxmlPath = jsonResponse["musicxml_path"] as? String {
 
                 DispatchQueue.main.async {
-                    apiResponse = "Success: File downloaded successfully!"
+                    apiResponse = "Success: File saved successfully in the app!"
                 }
 
-                // Download and save the MusicXML file
-                downloadMusicXML(from: musicxmlPath)
+                // Save the MusicXML file in the app
+                saveToAppDirectory(from: musicxmlPath)
             } else {
                 DispatchQueue.main.async {
                     apiResponse = "Error: Invalid response from server"
@@ -128,7 +128,7 @@ struct UploadView: View {
         }.resume()
     }
 
-    func downloadMusicXML(from path: String) {
+    func saveToAppDirectory(from path: String) {
         guard let fileURL = URL(string: "http://127.0.0.1:5000/\(path)") else {
             DispatchQueue.main.async {
                 apiResponse = "Error: Invalid file URL"
@@ -140,11 +140,18 @@ struct UploadView: View {
             if let location = location {
                 do {
                     let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-                    let destinationURL = documentsURL.appendingPathComponent(fileURL.lastPathComponent)
-                    try FileManager.default.moveItem(at: location, to: destinationURL)
-                    DispatchQueue.main.async {
-                        apiResponse = "Success: File downloaded successfully!"
+                    var destinationURL = documentsURL.appendingPathComponent(fileURL.lastPathComponent)
+
+                    // 如果文件已存在，则在名称后添加数字递增后缀
+                    var counter = 1
+                    while FileManager.default.fileExists(atPath: destinationURL.path) {
+                        let fileName = fileURL.deletingPathExtension().lastPathComponent
+                        let fileExtension = fileURL.pathExtension
+                        destinationURL = documentsURL.appendingPathComponent("\(fileName)_\(counter).\(fileExtension)")
+                        counter += 1
                     }
+
+                    try FileManager.default.moveItem(at: location, to: destinationURL)
                 } catch {
                     DispatchQueue.main.async {
                         apiResponse = "Error saving file: \(error.localizedDescription)"
