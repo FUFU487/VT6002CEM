@@ -5,14 +5,6 @@
 //  Created by Vincent on 22/1/2025.
 //
 
-
-//
-//  MyFilesView.swift
-//  VT6002CEM
-//
-//  Created by Vincent on 22/1/2025.
-//
-
 import SwiftUI
 import UIKit
 
@@ -53,31 +45,36 @@ struct MyFilesView: View {
             .navigationTitle("My Files")
             .onAppear(perform: loadFiles)
             .sheet(isPresented: $isRenaming) {
-                VStack(spacing: 20) {
-                    Text("Rename File")
-                        .font(.headline)
+                NavigationView {
+                    VStack(spacing: 20) {
+                        TextField("New File Name", text: $newFileName)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .padding()
 
-                    TextField("New File Name", text: $newFileName)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-
-                    Button("Save") {
-                        if let file = selectedFile {
-                            renameFile(file: file, newName: newFileName)
+                        Button("Save") {
+                            if let file = selectedFile {
+                                renameFile(file: file, newName: newFileName)
+                            }
+                            isRenaming = false
                         }
-                        isRenaming = false
-                    }
-                    .padding()
-                    .background(Color.green)
-                    .foregroundColor(.white)
-                    .cornerRadius(10)
+                        .padding()
+                        .background(Color.green)
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
 
-                    Button("Cancel") {
-                        isRenaming = false
+                        Spacer()
                     }
                     .padding()
-                    .foregroundColor(.red)
+                    .navigationTitle("Rename File")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarLeading) {
+                            Button("Cancel") {
+                                isRenaming = false
+                            }
+                        }
+                    }
                 }
-                .padding()
             }
         }
     }
