@@ -57,15 +57,6 @@ struct HomeView: View {
     }
 }
 
-struct MyFilesView: View {
-    var body: some View {
-        Text("My Files View")
-            .font(.largeTitle)
-            .foregroundColor(.blue)
-    }
-}
-
-
 struct NotificationsView: View {
     var body: some View {
         Text("Notifications View")
