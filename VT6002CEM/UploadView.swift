@@ -10,6 +10,7 @@ import UIKit
 
 struct UploadView: View {
     @State private var selectedImage: UIImage? = nil
+    @State private var processedImage: UIImage? = nil
     @State private var isImagePickerPresented = false
     @State private var isUploading = false
     @State private var uploadProgress: Double = 0.0
@@ -26,7 +27,30 @@ struct UploadView: View {
                     .resizable()
                     .scaledToFit()
                     .frame(height: 200)
-            } else {
+                    .overlay(
+                        Text("Original Image")
+                            .padding(4)
+                            .background(Color.black.opacity(0.6))
+                            .foregroundColor(.white)
+                            .cornerRadius(5),
+                        alignment: .bottomTrailing
+                    )
+            }
+
+            if let processedImage = processedImage {
+                Image(uiImage: processedImage)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(height: 200)
+                    .overlay(
+                        Text("Processed Image")
+                            .padding(4)
+                            .background(Color.black.opacity(0.6))
+                            .foregroundColor(.white)
+                            .cornerRadius(5),
+                        alignment: .bottomTrailing
+                    )
+            } else if selectedImage == nil {
                 Text("Select an image to process")
                     .foregroundColor(.gray)
             }
@@ -112,14 +136,19 @@ struct UploadView: View {
             }
 
             if let data = data, let jsonResponse = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
-               let musicxmlPath = jsonResponse["musicxml_path"] as? String {
+               let musicxmlPath = jsonResponse["musicxml_path"] as? String,
+               let base64Image = jsonResponse["dewarped_staff_image_base64"] as? String,
+               let imageData = Data(base64Encoded: base64Image),
+               let dewarpedImage = UIImage(data: imageData) {
 
                 DispatchQueue.main.async {
-                    apiResponse = "Success: File saved successfully in the app!"
-                }
+                    // 保存 MusicXML 文件
+                    apiResponse = "Success: File and image saved successfully in the app!"
+                    saveToAppDirectory(from: musicxmlPath)
 
-                // Save the MusicXML file in the app
-                saveToAppDirectory(from: musicxmlPath)
+                    // 更新顯示處理後的圖像
+                    processedImage = dewarpedImage
+                }
             } else {
                 DispatchQueue.main.async {
                     apiResponse = "Error: Invalid response from server"
