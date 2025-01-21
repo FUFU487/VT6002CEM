@@ -51,17 +51,6 @@ struct MyFilesView: View {
                             .textFieldStyle(RoundedBorderTextFieldStyle())
                             .padding()
 
-                        Button("Save") {
-                            if let file = selectedFile {
-                                renameFile(file: file, newName: newFileName)
-                            }
-                            isRenaming = false
-                        }
-                        .padding()
-                        .background(Color.green)
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
-
                         Spacer()
                     }
                     .padding()
@@ -70,6 +59,14 @@ struct MyFilesView: View {
                     .toolbar {
                         ToolbarItem(placement: .navigationBarLeading) {
                             Button("Cancel") {
+                                isRenaming = false
+                            }
+                        }
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            Button("Save") {
+                                if let file = selectedFile {
+                                    renameFile(file: file, newName: newFileName)
+                                }
                                 isRenaming = false
                             }
                         }
