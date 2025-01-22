@@ -14,7 +14,7 @@ struct LoginView: View {
         NavigationView {
             VStack(spacing: 16) {
                 // Email Input
-                TextField("Email", text: $email)
+                TextField("Email or Phone Number", text: $email)
                     .autocapitalization(.none)
                     .keyboardType(.emailAddress)
                     .padding()
@@ -69,13 +69,12 @@ struct LoginView: View {
                     Button(action: {
                         isShowingRegisterView = true
                     }) {
-                        Text("Create New Account")
-                            .foregroundColor(.white)
-                            .padding()
-                            .frame(maxWidth: .infinity)
+                        Text("Create New Account").foregroundColor(.white)
+                            .padding(.vertical, 8)
+                            .padding(.horizontal, 16)
+                            .background(Color.green)
+                            .cornerRadius(8)
                     }
-                    .background(Color.green)
-                    .cornerRadius(8)
                 }
 
                 Spacer()
