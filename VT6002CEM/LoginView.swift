@@ -2,6 +2,7 @@
 import SwiftUI
 import Firebase
 import FirebaseAuth
+import LocalAuthentication
 
 struct LoginView: View {
     @State private var email: String = ""
@@ -40,24 +41,44 @@ struct LoginView: View {
                             .padding()
                     }
 
-                    // Login Button
-                    Button(action: {
-                        isLoading = true
-                        loginUser()
-                    }) {
-                        if isLoading {
-                            ProgressView()
-                                .frame(maxWidth: .infinity)
-                        } else {
-                            Text("Login")
-                                .foregroundColor(.white)
-                                .padding()
-                                .frame(maxWidth: .infinity)
+                    // Login and Face ID Buttons
+                    HStack(spacing: 16) {
+                        Button(action: {
+                            isLoading = true
+                            loginUser()
+                        }) {
+                            if isLoading {
+                                ProgressView()
+                                    .frame(maxWidth: .infinity)
+                            } else {
+                                Text("Login")
+                                    .foregroundColor(.white)
+                                    .padding()
+                                    .frame(maxWidth: .infinity)
+                            }
+                        }
+                        .background(Color.blue)
+                        .cornerRadius(8)
+                        .disabled(email.isEmpty || password.isEmpty || isLoading)
+
+                        Button(action: {
+                            authenticateWithBiometrics { success in
+                                if success {
+                                    print("Face ID Authentication Successful")
+                                    isLoggedIn = true
+                                } else {
+                                    errorMessage = "Face ID Authentication Failed"
+                                }
+                            }
+                        }) {
+                            Image(systemName: "faceid")
+                                .font(.title)
+                                .foregroundColor(.blue) // 修改 logo 颜色为蓝色
+                                .padding(12)
+                                .background(Color(UIColor.systemGray6)) // 修改背景为米白色
+                                .cornerRadius(10)
                         }
                     }
-                    .background(Color.blue)
-                    .cornerRadius(8)
-                    .disabled(email.isEmpty || password.isEmpty || isLoading)
 
                     // Forgot Password Link
                     Button(action: {
@@ -120,6 +141,24 @@ struct LoginView: View {
             }
         }
     }
+
+    private func authenticateWithBiometrics(completion: @escaping (Bool) -> Void) {
+        let context = LAContext()
+        var error: NSError?
+
+        if context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
+            let reason = "Log in with Face ID or Touch ID"
+
+            context.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: reason) { success, authenticationError in
+                DispatchQueue.main.async {
+                    completion(success)
+                }
+            }
+        } else {
+            print("Biometric authentication not available")
+            completion(false)
+        }
+    }
 }
 
 struct RegisterView: View {
@@ -146,7 +185,7 @@ struct RegisterView: View {
                 .background(Color(.secondarySystemBackground))
                 .cornerRadius(8)
                 .textContentType(.password)
-                .disableAutocorrection(true) 
+                .disableAutocorrection(true)
 
             // Confirm Password Input
             SecureField("Confirm Password", text: $confirmPassword)
@@ -215,7 +254,6 @@ struct RegisterView: View {
         }
     }
 }
-
 
 #Preview {
     LoginView()
