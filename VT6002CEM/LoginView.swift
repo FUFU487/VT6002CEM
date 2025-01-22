@@ -3,25 +3,16 @@ import SwiftUI
 import Firebase
 import FirebaseAuth
 
-
 struct LoginView: View {
     @State private var email: String = ""
     @State private var password: String = ""
-    @State private var isLoginMode: Bool = true
     @State private var errorMessage: String? = nil
     @State private var isLoading: Bool = false
 
     var body: some View {
-        VStack(spacing: 30) {
-            // Toggle between Login and Register
-            Picker(selection: $isLoginMode, label: Text("Mode")) {
-                Text("Login").tag(true)
-                Text("Register").tag(false)
-            }
-            .pickerStyle(SegmentedPickerStyle())
-
+        VStack(spacing: 16) {
             // Email Input
-            TextField("Email", text: $email)
+            TextField("Email or Phone Number", text: $email)
                 .autocapitalization(.none)
                 .keyboardType(.emailAddress)
                 .padding()
@@ -42,16 +33,16 @@ struct LoginView: View {
                     .padding()
             }
 
-            // Submit Button
+            // Login Button
             Button(action: {
                 isLoading = true
-                handleAction()
+                loginUser()
             }) {
                 if isLoading {
                     ProgressView()
                         .frame(maxWidth: .infinity)
                 } else {
-                    Text(isLoginMode ? "Login" : "Register")
+                    Text("Login")
                         .foregroundColor(.white)
                         .padding()
                         .frame(maxWidth: .infinity)
@@ -61,29 +52,37 @@ struct LoginView: View {
             .cornerRadius(8)
             .disabled(email.isEmpty || password.isEmpty || isLoading)
 
+            // Forgot Password Link
+            Button(action: {
+                // Handle forgot password action
+            }) {
+                Text("Forgot Password?")
+                    .foregroundColor(.blue)
+            }
+
+            Divider()
+
+            // Register Button
+            Button(action: {
+                isLoading = true
+                registerUser()
+            }) {
+                Text("Create New Account")
+                    .foregroundColor(.white)
+                    .padding()
+                    .frame(maxWidth: .infinity)
+            }
+            .background(Color.green)
+            .cornerRadius(8)
+
             Spacer()
         }
         .padding()
-        .navigationTitle(isLoginMode ? "Login" : "Register")
-    }
-
-    private func handleAction() {
-        errorMessage = nil // Clear previous error
-
-        guard email.contains("@") && email.contains("."), password.count >= 6 else {
-            errorMessage = "Please enter a valid email and a password with at least 6 characters."
-            isLoading = false
-            return
-        }
-
-        if isLoginMode {
-            loginUser()
-        } else {
-            registerUser()
-        }
+        .navigationTitle("Login")
     }
 
     private func loginUser() {
+        errorMessage = nil
         Auth.auth().signIn(withEmail: email, password: password) { result, error in
             isLoading = false
             if let error = error as NSError? {
@@ -104,6 +103,7 @@ struct LoginView: View {
     }
 
     private func registerUser() {
+        errorMessage = nil
         Auth.auth().createUser(withEmail: email, password: password) { result, error in
             isLoading = false
             if let error = error as NSError? {
@@ -117,12 +117,11 @@ struct LoginView: View {
                 }
             } else {
                 print("Successfully registered user: \(result?.user.uid ?? "")")
-                loginUser() // Automatically log in after registration
+                loginUser()
             }
         }
     }
 }
-
 
 #Preview {
     LoginView()
