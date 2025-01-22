@@ -77,7 +77,9 @@ struct LoginView: View {
                     Divider()
 
                     // Register Button
-                    NavigationLink(destination: RegisterView(), isActive: $isShowingRegisterView) {
+                    NavigationLink(destination: RegisterView(onRegisterComplete: {
+                        isShowingRegisterView = false // 返回到登录页面
+                    }), isActive: $isShowingRegisterView) {
                         Button(action: {
                             isShowingRegisterView = true
                         }) {
@@ -126,6 +128,7 @@ struct RegisterView: View {
     @State private var confirmPassword: String = ""
     @State private var errorMessage: String? = nil
     @State private var isLoading: Bool = false
+    var onRegisterComplete: (() -> Void)? // 添加回调函数
 
     var body: some View {
         VStack(spacing: 16) {
@@ -142,14 +145,16 @@ struct RegisterView: View {
                 .padding()
                 .background(Color(.secondarySystemBackground))
                 .cornerRadius(8)
-                .textContentType(.password) // 指定为密码类型
-                .disableAutocorrection(true) // 禁用自动纠正
+                .textContentType(.password)
+                .disableAutocorrection(true) 
 
             // Confirm Password Input
             SecureField("Confirm Password", text: $confirmPassword)
                 .padding()
                 .background(Color(.secondarySystemBackground))
                 .cornerRadius(8)
+                .textContentType(.password)
+                .disableAutocorrection(true)
 
             // Error Message Display
             if let error = errorMessage {
@@ -205,6 +210,7 @@ struct RegisterView: View {
                 }
             } else {
                 print("Successfully registered user: \(result?.user.uid ?? "")")
+                onRegisterComplete?() // 注册成功后调用回调函数
             }
         }
     }
