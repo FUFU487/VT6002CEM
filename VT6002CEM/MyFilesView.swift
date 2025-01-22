@@ -55,7 +55,10 @@ struct MyFilesView: View {
                         Spacer()
 
                         Button(action: {
-                            isConfirmingDeletion = true
+                            isRenaming = false
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                                isConfirmingDeletion = true
+                            }
                         }) {
                             Text("Delete File")
                                 .font(.headline)
@@ -94,9 +97,13 @@ struct MyFilesView: View {
                     primaryButton: .destructive(Text("Delete")) {
                         if let file = selectedFile {
                             deleteFile(file: file)
+                            selectedFile = nil // 清除选中状态
+                            isConfirmingDeletion = false // 关闭弹窗
                         }
                     },
-                    secondaryButton: .cancel()
+                    secondaryButton: .cancel {
+                        isConfirmingDeletion = false // 取消操作时关闭弹窗
+                    }
                 )
             }
         }
