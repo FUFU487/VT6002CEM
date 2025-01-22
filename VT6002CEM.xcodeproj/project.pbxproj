@@ -8,13 +8,13 @@
 
 /* Begin PBXBuildFile section */
 		BF4B83612D3EBDA2001F67CF /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF4B83602D3EBDA2001F67CF /* UIKit.framework */; settings = {ATTRIBUTES = (Required, ); }; };
-		BF4B83712D411B2E001F67CF /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BF4B83702D411B2E001F67CF /* GoogleService-Info.plist */; };
 		BF4B83742D41227E001F67CF /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = BF4B83732D41227E001F67CF /* FirebaseAnalytics */; };
 		BF4B83762D41227E001F67CF /* FirebaseAnalyticsOnDeviceConversion in Frameworks */ = {isa = PBXBuildFile; productRef = BF4B83752D41227E001F67CF /* FirebaseAnalyticsOnDeviceConversion */; };
 		BF4B83782D41227E001F67CF /* FirebaseAnalyticsWithoutAdIdSupport in Frameworks */ = {isa = PBXBuildFile; productRef = BF4B83772D41227E001F67CF /* FirebaseAnalyticsWithoutAdIdSupport */; };
 		BF4B837A2D41227E001F67CF /* FirebaseAppCheck in Frameworks */ = {isa = PBXBuildFile; productRef = BF4B83792D41227E001F67CF /* FirebaseAppCheck */; };
 		BF4B837C2D41227E001F67CF /* FirebaseAppDistribution-Beta in Frameworks */ = {isa = PBXBuildFile; productRef = BF4B837B2D41227E001F67CF /* FirebaseAppDistribution-Beta */; };
 		BF4B83802D4125FD001F67CF /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = BF4B837F2D4125FD001F67CF /* FirebaseAuth */; };
+		BF4B83862D415639001F67CF /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BF4B83852D415639001F67CF /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -39,7 +39,7 @@
 		BF3B19832D3692C7002A38A0 /* VT6002CEMTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VT6002CEMTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF3B198D2D3692C7002A38A0 /* VT6002CEMUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VT6002CEMUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF4B83602D3EBDA2001F67CF /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.1.sdk/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
-		BF4B83702D411B2E001F67CF /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		BF4B83852D415639001F67CF /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -116,7 +116,7 @@
 		BF4B835F2D3EBDA2001F67CF /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				BF4B83702D411B2E001F67CF /* GoogleService-Info.plist */,
+				BF4B83852D415639001F67CF /* GoogleService-Info.plist */,
 				BF4B83602D3EBDA2001F67CF /* UIKit.framework */,
 			);
 			name = Frameworks;
@@ -251,7 +251,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BF4B83712D411B2E001F67CF /* GoogleService-Info.plist in Resources */,
+				BF4B83862D415639001F67CF /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -9,78 +9,91 @@ struct LoginView: View {
     @State private var errorMessage: String? = nil
     @State private var isLoading: Bool = false
     @State private var isShowingRegisterView: Bool = false
+    @State private var isShowingForgotPasswordAlert: Bool = false
+    @State private var isLoggedIn: Bool = false
 
     var body: some View {
-        NavigationView {
-            VStack(spacing: 16) {
-                // Email Input
-                TextField("Email or Phone Number", text: $email)
-                    .autocapitalization(.none)
-                    .keyboardType(.emailAddress)
-                    .padding()
-                    .background(Color(.secondarySystemBackground))
-                    .cornerRadius(8)
-
-                // Password Input
-                SecureField("Password", text: $password)
-                    .padding()
-                    .background(Color(.secondarySystemBackground))
-                    .cornerRadius(8)
-
-                // Error Message Display
-                if let error = errorMessage {
-                    Text(error)
-                        .foregroundColor(.red)
-                        .multilineTextAlignment(.center)
+        if isLoggedIn {
+            ContentView()
+        } else {
+            NavigationView {
+                VStack(spacing: 16) {
+                    // Email Input
+                    TextField("Email", text: $email)
+                        .autocapitalization(.none)
+                        .keyboardType(.emailAddress)
                         .padding()
-                }
+                        .background(Color(.secondarySystemBackground))
+                        .cornerRadius(8)
 
-                // Login Button
-                Button(action: {
-                    isLoading = true
-                    loginUser()
-                }) {
-                    if isLoading {
-                        ProgressView()
-                            .frame(maxWidth: .infinity)
-                    } else {
-                        Text("Login")
-                            .foregroundColor(.white)
+                    // Password Input
+                    SecureField("Password", text: $password)
+                        .padding()
+                        .background(Color(.secondarySystemBackground))
+                        .cornerRadius(8)
+
+                    // Error Message Display
+                    if let error = errorMessage {
+                        Text(error)
+                            .foregroundColor(.red)
+                            .multilineTextAlignment(.center)
                             .padding()
-                            .frame(maxWidth: .infinity)
                     }
-                }
-                .background(Color.blue)
-                .cornerRadius(8)
-                .disabled(email.isEmpty || password.isEmpty || isLoading)
 
-                // Forgot Password Link
-                Button(action: {
-                    // Handle forgot password action
-                }) {
-                    Text("Forgot Password?")
-                        .foregroundColor(.blue)
-                }
-
-                Divider()
-
-                // Register Button
-                NavigationLink(destination: RegisterView(), isActive: $isShowingRegisterView) {
+                    // Login Button
                     Button(action: {
-                        isShowingRegisterView = true
+                        isLoading = true
+                        loginUser()
                     }) {
-                        Text("Create New Account").foregroundColor(.white)
-                            .padding(.vertical, 8)
-                            .padding(.horizontal, 16)
-                            .background(Color.green)
-                            .cornerRadius(8)
+                        if isLoading {
+                            ProgressView()
+                                .frame(maxWidth: .infinity)
+                        } else {
+                            Text("Login")
+                                .foregroundColor(.white)
+                                .padding()
+                                .frame(maxWidth: .infinity)
+                        }
                     }
-                }
+                    .background(Color.blue)
+                    .cornerRadius(8)
+                    .disabled(email.isEmpty || password.isEmpty || isLoading)
 
-                Spacer()
+                    // Forgot Password Link
+                    Button(action: {
+                        isShowingForgotPasswordAlert = true
+                    }) {
+                        Text("Forgot Password?")
+                            .foregroundColor(.blue)
+                    }
+                    .alert(isPresented: $isShowingForgotPasswordAlert) {
+                        Alert(
+                            title: Text("Forgot Password"),
+                            message: Text("Please remember your password."),
+                            dismissButton: .default(Text("OK"))
+                        )
+                    }
+
+                    Divider()
+
+                    // Register Button
+                    NavigationLink(destination: RegisterView(), isActive: $isShowingRegisterView) {
+                        Button(action: {
+                            isShowingRegisterView = true
+                        }) {
+                            Text("Create New Account").foregroundColor(.white)
+                                .padding(.vertical, 8)
+                                .padding(.horizontal, 16)
+                                .background(Color.green)
+                                .cornerRadius(8)
+                        }
+                    }
+
+                    Spacer()
+                }
+                .padding()
+                .navigationTitle("Login")
             }
-            .padding()
-            .navigationTitle("Login")
         }
     }
 
@@ -101,6 +114,7 @@ struct LoginView: View {
                 }
             } else {
                 print("Successfully logged in with user: \(result?.user.uid ?? "")")
+                isLoggedIn = true
             }
         }
     }
@@ -128,6 +142,8 @@ struct RegisterView: View {
                 .padding()
                 .background(Color(.secondarySystemBackground))
                 .cornerRadius(8)
+                .textContentType(.password) // 指定为密码类型
+                .disableAutocorrection(true) // 禁用自动纠正
 
             // Confirm Password Input
             SecureField("Confirm Password", text: $confirmPassword)
@@ -193,6 +209,7 @@ struct RegisterView: View {
         }
     }
 }
+
 
 #Preview {
     LoginView()
