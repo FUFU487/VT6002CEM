@@ -76,7 +76,7 @@ struct LoginView: View {
                                 .foregroundColor(.blue) // 修改 logo 颜色为蓝色
                                 .padding(12)
                                 .background(Color(UIColor.systemGray6)) // 修改背景为米白色
-                                .cornerRadius(10)
+                                .cornerRadius(9)
                         }
                     }
 
