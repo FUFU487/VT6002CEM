@@ -151,6 +151,10 @@
 				BF4B837B2D41227E001F67CF /* FirebaseAppDistribution-Beta */,
 				BF4B837F2D4125FD001F67CF /* FirebaseAuth */,
 				BF4B83C52D427C37001F67CF /* FirebaseFirestore */,
+				BFC005BD2D42D22300FE0703 /* CBass */,
+				BFC005E62D42D42B00FE0703 /* AudioVisualizer */,
+				BFC005F22D42D9D300FE0703 /* AudioVisualizer */,
+				BFC005F42D42D9D300FE0703 /* Transition */,
 			);
 			productName = VT6002CEM;
 			productReference = BF3B19722D3692C5002A38A0 /* VT6002CEM.app */;
@@ -236,6 +240,8 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				BF4B83722D411BF8001F67CF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				BF03FEBD2D42DBD0008BAD9D /* XCLocalSwiftPackageReference "../../CBass" */,
+				BF03FEC02D42DBED008BAD9D /* XCLocalSwiftPackageReference "../../iShader" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = BF3B19732D3692C5002A38A0 /* Products */;
@@ -641,6 +647,17 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCLocalSwiftPackageReference section */
+		BF03FEBD2D42DBD0008BAD9D /* XCLocalSwiftPackageReference "../../CBass" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../../CBass;
+		};
+		BF03FEC02D42DBED008BAD9D /* XCLocalSwiftPackageReference "../../iShader" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../../iShader;
+		};
+/* End XCLocalSwiftPackageReference section */
+
 /* Begin XCRemoteSwiftPackageReference section */
 		BF4B83722D411BF8001F67CF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
@@ -687,6 +704,22 @@
 			isa = XCSwiftPackageProductDependency;
 			package = BF4B83722D411BF8001F67CF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseFirestore;
+		};
+		BFC005BD2D42D22300FE0703 /* CBass */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = CBass;
+		};
+		BFC005E62D42D42B00FE0703 /* AudioVisualizer */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = AudioVisualizer;
+		};
+		BFC005F22D42D9D300FE0703 /* AudioVisualizer */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = AudioVisualizer;
+		};
+		BFC005F42D42D9D300FE0703 /* Transition */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Transition;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

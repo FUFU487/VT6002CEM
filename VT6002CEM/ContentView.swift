@@ -11,11 +11,11 @@ struct ContentView: View {
     var body: some View {
         TabView {
             // Home Tab
-            HomeView()
-                .tabItem {
-                    Image(systemName: "house.fill")
-                    Text("Home")
-                }
+//            Home()
+//                .tabItem {
+//                    Image(systemName: "house.fill")
+//                    Text("Home")
+//                }
             
             // My Files Tab
             MyFilesView()
@@ -42,14 +42,6 @@ struct ContentView: View {
     }
 }
 
-// Sample Views for each Tab
-struct HomeView: View {
-    var body: some View {
-        Text("Home View")
-            .font(.largeTitle)
-            .foregroundColor(.purple)
-    }
-}
 
 
 
