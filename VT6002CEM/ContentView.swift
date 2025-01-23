@@ -31,12 +31,6 @@ struct ContentView: View {
                     Text("Upload")
                 }
             
-            // Notifications Tab
-            NotificationsView()
-                .tabItem {
-                    Image(systemName: "bell.fill")
-                    Text("Notifications")
-                }
             
             // Profile Tab
             ProfileView()
@@ -57,21 +51,7 @@ struct HomeView: View {
     }
 }
 
-struct NotificationsView: View {
-    var body: some View {
-        Text("Notifications View")
-            .font(.largeTitle)
-            .foregroundColor(.orange)
-    }
-}
 
-struct ProfileView: View {
-    var body: some View {
-        Text("Profile View")
-            .font(.largeTitle)
-            .foregroundColor(.green)
-    }
-}
 
 // Preview
 struct ContentView_Previews: PreviewProvider {
