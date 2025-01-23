@@ -236,7 +236,6 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				BF4B83722D411BF8001F67CF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
-				BF4B83ED2D42C4CA001F67CF /* XCRemoteSwiftPackageReference "awesome-audio-visualization" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = BF3B19732D3692C5002A38A0 /* Products */;
@@ -649,14 +648,6 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 11.7.0;
-			};
-		};
-		BF4B83ED2D42C4CA001F67CF /* XCRemoteSwiftPackageReference "awesome-audio-visualization" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/willianjusten/awesome-audio-visualization";
-			requirement = {
-				branch = master;
-				kind = branch;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
