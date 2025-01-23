@@ -15,6 +15,7 @@
 		BF4B837C2D41227E001F67CF /* FirebaseAppDistribution-Beta in Frameworks */ = {isa = PBXBuildFile; productRef = BF4B837B2D41227E001F67CF /* FirebaseAppDistribution-Beta */; };
 		BF4B83802D4125FD001F67CF /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = BF4B837F2D4125FD001F67CF /* FirebaseAuth */; };
 		BF4B83862D415639001F67CF /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BF4B83852D415639001F67CF /* GoogleService-Info.plist */; };
+		BF4B83C62D427C37001F67CF /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = BF4B83C52D427C37001F67CF /* FirebaseFirestore */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -70,6 +71,7 @@
 				BF4B83612D3EBDA2001F67CF /* UIKit.framework in Frameworks */,
 				BF4B837A2D41227E001F67CF /* FirebaseAppCheck in Frameworks */,
 				BF4B83782D41227E001F67CF /* FirebaseAnalyticsWithoutAdIdSupport in Frameworks */,
+				BF4B83C62D427C37001F67CF /* FirebaseFirestore in Frameworks */,
 				BF4B83802D4125FD001F67CF /* FirebaseAuth in Frameworks */,
 				BF4B837C2D41227E001F67CF /* FirebaseAppDistribution-Beta in Frameworks */,
 			);
@@ -148,6 +150,7 @@
 				BF4B83792D41227E001F67CF /* FirebaseAppCheck */,
 				BF4B837B2D41227E001F67CF /* FirebaseAppDistribution-Beta */,
 				BF4B837F2D4125FD001F67CF /* FirebaseAuth */,
+				BF4B83C52D427C37001F67CF /* FirebaseFirestore */,
 			);
 			productName = VT6002CEM;
 			productReference = BF3B19722D3692C5002A38A0 /* VT6002CEM.app */;
@@ -679,6 +682,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = BF4B83722D411BF8001F67CF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseAuth;
+		};
+		BF4B83C52D427C37001F67CF /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BF4B83722D411BF8001F67CF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
