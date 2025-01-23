@@ -1,67 +1,123 @@
-//
-//  Home.swift
-//  VT6002CEM
-//
-//  Created by Vincent on 14/1/2025.
-//
-
 import SwiftUI
+import AudioVisualizer
+import QuickLook
+import Transition
 
-struct Home: View {
-    @State private var isUploading = false
-    @State private var resultText = "Upload a music sheet image!"
+struct HomeView: View {
+    @Bindable var manager: AudioManager
+    @Bindable var settings: Settings
+
+    @Environment(\.colorScheme) var colorScheme
+
+    @State private var visNum: Int = 0
+    @State private var enableSongFileSelection = false
+    @State private var pauseButtonIsPaused = false
+
+    @State private var userGuideUrl: URL?
+    @State private var visualizationsGuideUrl: URL?
+
+    @State private var showTopToolbar = true
+    @State private var showBottomToolbar = true
+    @State private var nextVis = true
 
     var body: some View {
-        VStack {
-            Button("Upload Image") {
-                uploadImage()
+        VStack(spacing: 0) {
+            // Top Toolbar
+            if showTopToolbar {
+                topToolbar
             }
-            .padding()
-            .disabled(isUploading)
 
-            Text(resultText)
-                .padding()
+            // Main Visualization Pane
+            Group {
+                visList[visNum].view
+                    .transition(.crosswarp(rightToLeft: nextVis))
+            }
+            .navigationTitle("MuVis - Music Visualizer")
+            .gesture(DragGesture(minimumDistance: 3.0, coordinateSpace: .local)
+                .onEnded { value in
+                    switch(value.translation.width, value.translation.height) {
+                    case (...0, -30...30): // Left swipe
+                        withAnimation(.easeOut(duration: 1.618)) {
+                            nextVis = true
+                            visNum = (visNum + 1) % visList.count
+                        }
+                    case (0..., -30...30): // Right swipe
+                        withAnimation(.easeOut(duration: 1.618)) {
+                            nextVis = false
+                            visNum = (visNum - 1 + visList.count) % visList.count
+                        }
+                    default:
+                        break
+                    }
+                })
+            .gesture(TapGesture(count: 3)
+                .onEnded {
+                    showTopToolbar.toggle()
+                    showBottomToolbar.toggle()
+                }
+            )
+
+            // Bottom Toolbar
+            if showBottomToolbar {
+                bottomToolbar
+            }
         }
     }
 
-    func uploadImage() {
-        guard let url = URL(string: "http://127.0.0.1:5000/process") else {
-            resultText = "Invalid server URL"
-            return
+    // Top Toolbar
+    var topToolbar: some View {
+        HStack {
+            Text("Gain-")
+                .padding(.leading)
+
+            Slider(value: $manager.userGain, in: 0.0...8.0)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10)
+                        .strokeBorder(.red, lineWidth: 2)
+                )
+                .help("This slider controls the gain of the visualization.")
+            
+            Text("-Treble")
+                .padding(.trailing)
         }
+    }
 
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-
-        let boundary = UUID().uuidString
-        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
-
-        // 獲取本地圖片路徑
-        let filePath = Bundle.main.path(forResource: "sample", ofType: "png")!
-        let fileData = try! Data(contentsOf: URL(fileURLWithPath: filePath))
-
-        // 構建請求體
-        var body = Data()
-        body.append("--\(boundary)\r\n".data(using: .utf8)!)
-        body.append("Content-Disposition: form-data; name=\"file\"; filename=\"sample.png\"\r\n".data(using: .utf8)!)
-        body.append("Content-Type: image/png\r\n\r\n".data(using: .utf8)!)
-        body.append(fileData)
-        body.append("\r\n--\(boundary)--\r\n".data(using: .utf8)!)
-
-        request.httpBody = body
-
-        isUploading = true
-        URLSession.shared.dataTask(with: request) { data, response, error in
-            DispatchQueue.main.async {
-                isUploading = false
-
-                if let error = error {
-                    resultText = "Upload failed: \(error.localizedDescription)"
-                    return
+    // Bottom Toolbar
+    var bottomToolbar: some View {
+        HStack {
+            Button(action: {
+                nextVis = false
+                withAnimation(.easeOut(duration: 1.618)) {
+                    visNum = (visNum - 1 + visList.count) % visList.count
                 }
-
-                resultText = "Upload successful! Check server output."
+            }) {
+                Image(systemName: "chevron.left")
             }
-        }.resume()
+
+            Text("Vis: \(visNum)").font(.callout)
+
+            Button(action: {
+                nextVis = true
+                withAnimation(.easeOut(duration: 1.618)) {
+                    visNum = (visNum + 1) % visList.count
+                }
+            }) {
+                Image(systemName: "chevron.right")
+            }
+
+            Spacer()
+
+            Button(action: {
+                if manager.isPaused {
+                    manager.startMusicPlay()
+                } else {
+                    manager.pauseMusicPlay()
+                }
+                manager.isPaused.toggle()
+                pauseButtonIsPaused.toggle()
+            }) {
+                pauseButtonIsPaused ? Image(systemName: "play.fill") : Image(systemName: "pause.fill")
+            }
+        }
     }
 }
