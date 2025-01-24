@@ -1,10 +1,3 @@
-//
-//  ContentView 2.swift
-//  VT6002CEM
-//
-//  Created by Vincent on 20/1/2025.
-//
-
 import SwiftUI
 import UIKit
 
@@ -111,25 +104,36 @@ struct UploadView: View {
                 return
             }
 
-            if let data = data, let jsonResponse = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
-               let musicxmlPath = jsonResponse["musicxml_path"] as? String {
-
+            if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode != 200 {
                 DispatchQueue.main.async {
-                    apiResponse = "Success: File saved successfully in the app!"
+                    apiResponse = "Error: Server returned status code \(httpResponse.statusCode)"
                 }
+                return
+            }
 
-                // Save the MusicXML file in the app
-                saveToAppDirectory(from: musicxmlPath)
-            } else {
-                DispatchQueue.main.async {
-                    apiResponse = "Error: Invalid response from server"
+            if let data = data {
+                print("Raw API Response: \(String(data: data, encoding: .utf8) ?? "Invalid data")")
+                if let jsonResponse = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+                   let musicxmlPath = jsonResponse["musicxml_path"] as? String {
+
+                    DispatchQueue.main.async {
+                        apiResponse = "Success: File saved successfully in the app!"
+                    }
+
+                    // Save the MusicXML file in the app
+                    saveToAppDirectory(from: musicxmlPath)
+                } else {
+                    DispatchQueue.main.async {
+                        apiResponse = "Error: Invalid response from server"
+                    }
                 }
             }
         }.resume()
     }
 
     func saveToAppDirectory(from path: String) {
-        guard let fileURL = URL(string: "http://127.0.0.1:5000/\(path)") else {
+        // 确保路径是完整的 URL
+        guard let fileURL = URL(string: path) else {
             DispatchQueue.main.async {
                 apiResponse = "Error: Invalid file URL"
             }
@@ -142,16 +146,19 @@ struct UploadView: View {
                     let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
                     var destinationURL = documentsURL.appendingPathComponent(fileURL.lastPathComponent)
 
-                    // 如果文件已存在，则在名称后添加数字递增后缀
-                    var counter = 1
-                    while FileManager.default.fileExists(atPath: destinationURL.path) {
-                        let fileName = fileURL.deletingPathExtension().lastPathComponent
-                        let fileExtension = fileURL.pathExtension
-                        destinationURL = documentsURL.appendingPathComponent("\(fileName)_\(counter).\(fileExtension)")
-                        counter += 1
+                    // 如果文件已存在，则删除旧文件
+                    if FileManager.default.fileExists(atPath: destinationURL.path) {
+                        try FileManager.default.removeItem(at: destinationURL)
                     }
 
+                    // 移动文件
                     try FileManager.default.moveItem(at: location, to: destinationURL)
+                    print("File successfully saved to: \(destinationURL.path)")
+
+                    // 验证文件内容
+                    let fileContent = try String(contentsOf: destinationURL, encoding: .utf8)
+                    print("Saved File Content Preview: \(fileContent.prefix(500))")
+
                 } catch {
                     DispatchQueue.main.async {
                         apiResponse = "Error saving file: \(error.localizedDescription)"
