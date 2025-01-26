@@ -1,5 +1,5 @@
 {
-  "originHash" : "02cbf7c3d01ed518525411a9ece9a3f096989cfb10757537da0a1eb6df02ddb4",
+  "originHash" : "aeb2b058d2902af5090810d52a4316a06e83148b10241629c3938f93b2265197",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -92,15 +92,6 @@
       }
     },
     {
-      "identity" : "music-notation",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/music-notation-swift/music-notation",
-      "state" : {
-        "revision" : "60e42248c68830e97be02541fe5fedcced92eca0",
-        "version" : "0.3.0"
-      }
-    },
-    {
       "identity" : "nanopb",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/firebase/nanopb.git",
@@ -125,6 +116,33 @@
       "state" : {
         "revision" : "ebc7251dd5b37f627c93698e4374084d98409633",
         "version" : "1.28.2"
+      }
+    },
+    {
+      "identity" : "swiftmxl",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Treata11/SwiftMXL",
+      "state" : {
+        "branch" : "latest",
+        "revision" : "2d44982022629353439a07abe862adb7f2d8d956"
+      }
+    },
+    {
+      "identity" : "xmlcoder",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/MaxDesiatov/XMLCoder",
+      "state" : {
+        "revision" : "b1e944cbd0ef33787b13f639a5418d55b3bed501",
+        "version" : "0.17.1"
+      }
+    },
+    {
+      "identity" : "yams",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/jpsim/Yams.git",
+      "state" : {
+        "revision" : "3036ba9d69cf1fd04d433527bc339dc0dc75433d",
+        "version" : "5.1.3"
       }
     }
   ],

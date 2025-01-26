@@ -16,6 +16,7 @@
 		BF4B83802D4125FD001F67CF /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = BF4B837F2D4125FD001F67CF /* FirebaseAuth */; };
 		BF4B83862D415639001F67CF /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BF4B83852D415639001F67CF /* GoogleService-Info.plist */; };
 		BF4B83C62D427C37001F67CF /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = BF4B83C52D427C37001F67CF /* FirebaseFirestore */; };
+		BF83B1B42D467CE30082A83C /* SwiftMXL in Frameworks */ = {isa = PBXBuildFile; productRef = BF83B1B32D467CE30082A83C /* SwiftMXL */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -74,6 +75,7 @@
 				BF4B83C62D427C37001F67CF /* FirebaseFirestore in Frameworks */,
 				BF4B83802D4125FD001F67CF /* FirebaseAuth in Frameworks */,
 				BF4B837C2D41227E001F67CF /* FirebaseAppDistribution-Beta in Frameworks */,
+				BF83B1B42D467CE30082A83C /* SwiftMXL in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -156,7 +158,8 @@
 				BFC005F22D42D9D300FE0703 /* AudioVisualizer */,
 				BFC005F42D42D9D300FE0703 /* Transition */,
 				BF03FF4A2D42DFDD008BAD9D /* MusicXML */,
-				BF94E4E52D42EF29001EB9D5 /* MusicNotation */,
+				BF01AC552D45BCB100B8F30A /* MusicXML */,
+				BF83B1B32D467CE30082A83C /* SwiftMXL */,
 			);
 			productName = VT6002CEM;
 			productReference = BF3B19722D3692C5002A38A0 /* VT6002CEM.app */;
@@ -242,7 +245,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				BF4B83722D411BF8001F67CF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
-				BF94E4E42D42EC63001EB9D5 /* XCRemoteSwiftPackageReference "music-notation" */,
+				BF83B1B22D467CE30082A83C /* XCRemoteSwiftPackageReference "SwiftMXL" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = BF3B19732D3692C5002A38A0 /* Products */;
@@ -657,17 +660,21 @@
 				minimumVersion = 11.7.0;
 			};
 		};
-		BF94E4E42D42EC63001EB9D5 /* XCRemoteSwiftPackageReference "music-notation" */ = {
+		BF83B1B22D467CE30082A83C /* XCRemoteSwiftPackageReference "SwiftMXL" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/music-notation-swift/music-notation";
+			repositoryURL = "https://github.com/Treata11/SwiftMXL";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.1.1;
+				branch = latest;
+				kind = branch;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		BF01AC552D45BCB100B8F30A /* MusicXML */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = MusicXML;
+		};
 		BF03FF4A2D42DFDD008BAD9D /* MusicXML */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = MusicXML;
@@ -707,10 +714,10 @@
 			package = BF4B83722D411BF8001F67CF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseFirestore;
 		};
-		BF94E4E52D42EF29001EB9D5 /* MusicNotation */ = {
+		BF83B1B32D467CE30082A83C /* SwiftMXL */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = BF94E4E42D42EC63001EB9D5 /* XCRemoteSwiftPackageReference "music-notation" */;
-			productName = MusicNotation;
+			package = BF83B1B22D467CE30082A83C /* XCRemoteSwiftPackageReference "SwiftMXL" */;
+			productName = SwiftMXL;
 		};
 		BFC005BD2D42D22300FE0703 /* CBass */ = {
 			isa = XCSwiftPackageProductDependency;
