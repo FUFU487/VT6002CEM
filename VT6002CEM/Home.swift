@@ -76,53 +76,62 @@ struct Home: View {
         }
     }
 
-
     private func generateMIDI(from notes: [String]) -> URL {
         let tempDirectory = FileManager.default.temporaryDirectory
         let midiFileURL = tempDirectory.appendingPathComponent("output.mid")
 
         var midiData = Data()
 
-        // MIDI 文件头
+        // 写入 MIDI 文件头
         midiData.append(contentsOf: [0x4D, 0x54, 0x68, 0x64]) // "MThd"
-        midiData.append(contentsOf: [0x00, 0x00, 0x00, 0x06]) // Header length
-        midiData.append(contentsOf: [0x00, 0x00]) // Format type: 0 (single track)
+        midiData.append(contentsOf: [0x00, 0x00, 0x00, 0x06]) // Header 长度 6 bytes
+        midiData.append(contentsOf: [0x00, 0x00]) // Format type: 0 (单轨)
         midiData.append(contentsOf: [0x00, 0x01]) // Number of tracks: 1
         midiData.append(contentsOf: [0x00, 0x60]) // Division: 96 ticks per quarter note
 
-        // Track 数据
+        // 开始 Track 数据
         var trackData = Data()
-        trackData.append(contentsOf: [0x00, 0xFF, 0x03, 0x07]) // Track Name (可选)
+
+        // 添加 Track 名称
+        trackData.append(contentsOf: [0x00, 0xFF, 0x03, 0x07]) // Meta Event: Track name
         trackData.append(contentsOf: "Track 1".utf8)
 
+        var currentTime: UInt32 = 0 // 当前时间（以 ticks 为单位）
+
+        // 添加音符事件
         for note in notes {
-            // 解析音符
             let components = note.split(separator: ",")
-            guard components.count >= 2 else { continue }
+            guard components.count >= 3 else { continue }
 
             let pitch = components[0].trimmingCharacters(in: .whitespaces).replacingOccurrences(of: "Pitch: ", with: "")
-            let durationString = components[1].trimmingCharacters(in: .whitespaces)
-            guard let duration = Int(durationString.split(separator: ":").last ?? "") else { continue }
+            let durationString = components[1].trimmingCharacters(in: .whitespaces).replacingOccurrences(of: "Duration: ", with: "")
+            guard let duration = Int(durationString) else { continue }
 
-            // 将 Pitch 映射到 MIDI 数字
             if let midiNumber = pitchToMIDINumber(pitch: pitch) {
-                // Note-On
-                trackData.append(contentsOf: [0x00, 0x90, UInt8(midiNumber), 0x64]) // Velocity: 100
-                // Note-Off
-                trackData.append(contentsOf: [UInt8(duration), 0x80, UInt8(midiNumber), 0x40]) // Velocity: 64
+                // Note-On 事件
+                trackData.append(contentsOf: deltaTimeBytes(for: currentTime))
+                trackData.append(contentsOf: [0x90, UInt8(midiNumber), 0x64]) // Velocity: 100
+
+                // Note-Off 事件
+                let noteDurationTicks = UInt32(duration * 12) // 假设 duration 为 1/8 音符单位
+                trackData.append(contentsOf: deltaTimeBytes(for: noteDurationTicks))
+                trackData.append(contentsOf: [0x80, UInt8(midiNumber), 0x40]) // Velocity: 64
+
+                // 更新当前时间
+                currentTime = 0 // Note-On 后 delta time 重置为 0
             }
         }
 
-        // 结束事件
+        // 添加 Track 结束事件
         trackData.append(contentsOf: [0x00, 0xFF, 0x2F, 0x00]) // End of Track
 
-        // 添加 Track 长度
+        // 写入 Track 数据长度
         let trackLength = UInt32(trackData.count).bigEndian
         midiData.append(contentsOf: [0x4D, 0x54, 0x72, 0x6B]) // "MTrk"
         midiData.append(contentsOf: withUnsafeBytes(of: trackLength) { Array($0) })
         midiData.append(trackData)
 
-        // 写入文件
+        // 写入 MIDI 文件
         do {
             try midiData.write(to: midiFileURL)
             print("生成的 MIDI 文件路径: \(midiFileURL)")
@@ -133,22 +142,33 @@ struct Home: View {
         return midiFileURL
     }
 
-    private func pitchToMIDINumber(pitch: String) -> Int? {
-        let pitchMap: [String: Int] = [
-            "C0": 12, "C#0": 13, "D0": 14, "D#0": 15, "E0": 16, "F0": 17, "F#0": 18, "G0": 19, "G#0": 20, "A0": 21, "A#0": 22, "B0": 23,
-            "C1": 24, "C#1": 25, "D1": 26, "D#1": 27, "E1": 28, "F1": 29, "F#1": 30, "G1": 31, "G#1": 32, "A1": 33, "A#1": 34, "B1": 35,
-            "C2": 36, "C#2": 37, "D2": 38, "D#2": 39, "E2": 40, "F2": 41, "F#2": 42, "G2": 43, "G#2": 44, "A2": 45, "A#2": 46, "B2": 47,
-            "C3": 48, "C#3": 49, "D3": 50, "D#3": 51, "E3": 52, "F3": 53, "F#3": 54, "G3": 55, "G#3": 56, "A3": 57, "A#3": 58, "B3": 59,
-            "C4": 60, "C#4": 61, "D4": 62, "D#4": 63, "E4": 64, "F4": 65, "F#4": 66, "G4": 67, "G#4": 68, "A4": 69, "A#4": 70, "B4": 71,
-            "C5": 72, "C#5": 73, "D5": 74, "D#5": 75, "E5": 76, "F5": 77, "F#5": 78, "G5": 79, "G#5": 80, "A5": 81, "A#5": 82, "B5": 83,
-            "C6": 84, "C#6": 85, "D6": 86, "D#6": 87, "E6": 88, "F6": 89, "F#6": 90, "G6": 91, "G#6": 92, "A6": 93, "A#6": 94, "B6": 95,
-            "C7": 96, "C#7": 97, "D7": 98, "D#7": 99, "E7": 100, "F7": 101, "F#7": 102, "G7": 103, "G#7": 104, "A7": 105, "A#7": 106, "B7": 107,
-            "C8": 108
-        ]
-        return pitchMap[pitch]
+    // 将 delta time 转换为可变长度的字节表示
+    private func deltaTimeBytes(for deltaTime: UInt32) -> [UInt8] {
+        var buffer = [UInt8]()
+        var value = deltaTime
+
+        repeat {
+            var byte = UInt8(value & 0x7F)
+            value >>= 7
+            if !buffer.isEmpty { byte |= 0x80 } // 设置最高位
+            buffer.insert(byte, at: 0)
+        } while value > 0
+
+        return buffer
     }
 
-
+    // 将音高转换为 MIDI 数字编号
+    private func pitchToMIDINumber(pitch: String) -> Int? {
+        let pitchMap = [
+            "C": 0, "C#": 1, "D": 2, "D#": 3, "E": 4, "F": 5, "F#": 6,
+            "G": 7, "G#": 8, "A": 9, "A#": 10, "B": 11
+        ]
+        let octaveIndex = pitch.lastIndex(where: { $0.isNumber })
+        guard let octaveIndex = octaveIndex, let octave = Int(String(pitch[octaveIndex...])) else { return nil }
+        let note = String(pitch[..<octaveIndex])
+        guard let semitone = pitchMap[note] else { return nil }
+        return 12 * (octave + 1) + semitone
+    }
 
     func playMIDI(midiFileURL: URL, soundFontURL: URL) {
         do {
@@ -163,8 +183,6 @@ struct Home: View {
             print("播放 MIDI 文件失败: \(error.localizedDescription)")
         }
     }
-
-
 }
 
 struct MusicXMLView_Previews: PreviewProvider {
