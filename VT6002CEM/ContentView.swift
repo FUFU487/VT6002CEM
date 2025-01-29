@@ -31,6 +31,11 @@ struct ContentView: View {
                     Text("Upload")
                 }
             
+            ARView2()
+                .tabItem {
+                    Image(systemName: "arkit")
+                    Text("AR")
+                }
             
             // Profile Tab
             ProfileView()
