@@ -63,10 +63,9 @@ struct ARViewContainer: UIViewRepresentable {
     
     private func generateWaveform(from midiData: Data) -> [Float] {
         // Parse MIDI data and generate waveform
-        // This is a simplified example, you may need to use a MIDI parser library
         var waveform: [Float] = []
-        for i in 0..<100 {
-            waveform.append(Float(sin(Double(i) * 0.1)))
+        for i in 0..<500 {  // 增加到 500 個點，使波形更加細緻
+            waveform.append(Float(sin(Double(i) * 0.03)))  // 減少步長讓波形更細膩
         }
         return waveform
     }
@@ -75,9 +74,14 @@ struct ARViewContainer: UIViewRepresentable {
         let waveformNode = SCNNode()
         
         for (index, value) in waveform.enumerated() {
-            let box = SCNBox(width: 0.1, height: CGFloat(value), length: 0.1, chamferRadius: 0)
+            let box = SCNBox(width: 0.02, height: CGFloat(value) * 0.5, length: 0.02, chamferRadius: 0)  // 讓模型更小
+            let material = SCNMaterial()
+            material.diffuse.contents = UIColor.blue
+            material.specular.contents = UIColor.white
+            box.materials = [material]
+            
             let boxNode = SCNNode(geometry: box)
-            boxNode.position = SCNVector3(Float(index) * 0.2, Float(value) / 2, 0)
+            boxNode.position = SCNVector3(Float(index) * 0.03, Float(value) * 0.25, 0)  // 讓柱狀模型更緊湊
             waveformNode.addChildNode(boxNode)
         }
         
