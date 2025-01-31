@@ -75,7 +75,7 @@ struct UploadView: View {
         isUploading = true
         uploadProgress = 0.0
 
-        let url = URL(string: "http://127.0.0.1:5000/process-image")!
+        let url = URL(string: "http://192.168.1.133:5001/process-image")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.timeoutInterval = 300 // 设置超时为 300 秒 (5 分钟)
