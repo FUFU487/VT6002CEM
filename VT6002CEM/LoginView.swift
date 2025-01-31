@@ -11,87 +11,112 @@ struct LoginView: View {
     @State private var isLoading: Bool = false
     @State private var isShowingRegisterView: Bool = false
     @State private var isShowingForgotPasswordAlert: Bool = false
+    @State private var isLoggedIn: Bool = false
 
     var body: some View {
-        NavigationView {
-            VStack(spacing: 16) {
-                // Email Input
-                TextField("Email", text: $email)
-                    .autocapitalization(.none)
-                    .keyboardType(.emailAddress)
-                    .padding()
-                    .background(Color(.secondarySystemBackground))
-                    .cornerRadius(8)
-
-                // Password Input
-                SecureField("Password", text: $password)
-                    .padding()
-                    .background(Color(.secondarySystemBackground))
-                    .cornerRadius(8)
-
-                // Error Message Display
-                if let error = errorMessage {
-                    Text(error)
-                        .foregroundColor(.red)
-                        .multilineTextAlignment(.center)
+        if isLoggedIn {
+            ContentView()
+        } else {
+            NavigationView {
+                VStack(spacing: 16) {
+                    // Email Input
+                    TextField("Email", text: $email)
+                        .autocapitalization(.none)
+                        .keyboardType(.emailAddress)
                         .padding()
-                }
+                        .background(Color(.secondarySystemBackground))
+                        .cornerRadius(8)
 
-                // Login Button
-                Button(action: {
-                    isLoading = true
-                    loginUser()
-                }) {
-                    if isLoading {
-                        ProgressView()
-                            .frame(maxWidth: .infinity)
-                    } else {
-                        Text("Login")
-                            .foregroundColor(.white)
+                    // Password Input
+                    SecureField("Password", text: $password)
+                        .padding()
+                        .background(Color(.secondarySystemBackground))
+                        .cornerRadius(8)
+
+                    // Error Message Display
+                    if let error = errorMessage {
+                        Text(error)
+                            .foregroundColor(.red)
+                            .multilineTextAlignment(.center)
                             .padding()
-                            .frame(maxWidth: .infinity)
                     }
-                }
-                .background(Color.blue)
-                .cornerRadius(8)
-                .disabled(email.isEmpty || password.isEmpty || isLoading)
 
-                // Forgot Password Link
-                Button(action: {
-                    isShowingForgotPasswordAlert = true
-                }) {
-                    Text("Forgot Password?")
-                        .foregroundColor(.blue)
-                }
-                .alert(isPresented: $isShowingForgotPasswordAlert) {
-                    Alert(
-                        title: Text("Forgot Password"),
-                        message: Text("Please remember your password."),
-                        dismissButton: .default(Text("OK"))
-                    )
-                }
+                    // Login and Face ID Buttons
+                    HStack(spacing: 16) {
+                        Button(action: {
+                            isLoading = true
+                            loginUser()
+                        }) {
+                            if isLoading {
+                                ProgressView()
+                                    .frame(maxWidth: .infinity)
+                            } else {
+                                Text("Login")
+                                    .foregroundColor(.white)
+                                    .padding()
+                                    .frame(maxWidth: .infinity)
+                            }
+                        }
+                        .background(Color.blue)
+                        .cornerRadius(8)
+                        .disabled(email.isEmpty || password.isEmpty || isLoading)
 
-                Divider()
+                        Button(action: {
+                            authenticateWithBiometrics { success in
+                                if success {
+                                    print("Face ID Authentication Successful")
+                                    isLoggedIn = true
+                                } else {
+                                    errorMessage = "Face ID Authentication Failed"
+                                }
+                            }
+                        }) {
+                            Image(systemName: "faceid")
+                                .font(.title)
+                                .foregroundColor(.blue) // 修改 logo 颜色为蓝色
+                                .padding(12)
+                                .background(Color(UIColor.systemGray6)) // 修改背景为米白色
+                                .cornerRadius(9)
+                        }
+                    }
 
-                // Register Button
-                NavigationLink(destination: RegisterView(onRegisterComplete: {
-                    isShowingRegisterView = false // 返回到登录页面
-                }), isActive: $isShowingRegisterView) {
+                    // Forgot Password Link
                     Button(action: {
-                        isShowingRegisterView = true
+                        isShowingForgotPasswordAlert = true
                     }) {
-                        Text("Create New Account").foregroundColor(.white)
-                            .padding(.vertical, 8)
-                            .padding(.horizontal, 16)
-                            .background(Color.green)
-                            .cornerRadius(8)
+                        Text("Forgot Password?")
+                            .foregroundColor(.blue)
                     }
-                }
+                    .alert(isPresented: $isShowingForgotPasswordAlert) {
+                        Alert(
+                            title: Text("Forgot Password"),
+                            message: Text("Please remember your password."),
+                            dismissButton: .default(Text("OK"))
+                        )
+                    }
 
-                Spacer()
+                    Divider()
+
+                    // Register Button
+                    NavigationLink(destination: RegisterView(onRegisterComplete: {
+                        isShowingRegisterView = false // 返回到登录页面
+                    }), isActive: $isShowingRegisterView) {
+                        Button(action: {
+                            isShowingRegisterView = true
+                        }) {
+                            Text("Create New Account").foregroundColor(.white)
+                                .padding(.vertical, 8)
+                                .padding(.horizontal, 16)
+                                .background(Color.green)
+                                .cornerRadius(8)
+                        }
+                    }
+
+                    Spacer()
+                }
+                .padding()
+                .navigationTitle("Login")
             }
-            .padding()
-            .navigationTitle("Login")
         }
     }
 
@@ -112,7 +137,26 @@ struct LoginView: View {
                 }
             } else {
                 print("Successfully logged in with user: \(result?.user.uid ?? "")")
+                isLoggedIn = true
             }
+        }
+    }
+
+    private func authenticateWithBiometrics(completion: @escaping (Bool) -> Void) {
+        let context = LAContext()
+        var error: NSError?
+
+        if context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
+            let reason = "Log in with Face ID or Touch ID"
+
+            context.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: reason) { success, authenticationError in
+                DispatchQueue.main.async {
+                    completion(success)
+                }
+            }
+        } else {
+            print("Biometric authentication not available")
+            completion(false)
         }
     }
 }
