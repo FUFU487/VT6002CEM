@@ -5,6 +5,7 @@ import AVFoundation
 struct Home: View {
     @State private var documentFiles: [String] = [] // 存储文件列表
     @State private var midiPlayer: AVMIDIPlayer? // 用于播放 MIDI
+    @State private var isPlaying: Bool = false // 播放狀態
 
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
@@ -12,27 +13,53 @@ struct Home: View {
                 .font(.largeTitle)
                 .bold()
 
-            Button(action: listDocumentFiles) {
-                Text("List Files in Documents")
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color.blue)
-                    .foregroundColor(.white)
-                    .cornerRadius(8)
-            }
-
             List(documentFiles, id: \ .self) { file in
                 Text(file)
                     .onTapGesture {
                         analyzeFile(named: file)
                     }
             }
+            
+
 
             Spacer()
         }
         .padding()
+        .onAppear(perform: listDocumentFiles) // 画面加载时自动列出文件
+        .overlay(
+                    HStack {
+                        Spacer()
+                        VStack {
+                            Spacer()
+                            Button(action: togglePlayback) {
+                                Image(systemName: isPlaying ? "pause.fill" : "play.fill")
+                                    .resizable()
+                                    .frame(width: 30, height: 30)
+                                    .padding()
+                                    .background(isPlaying ? Color.red : Color.green)
+                                    .foregroundColor(.white)
+                                    .cornerRadius(8)
+                                    .padding()
+                            }
+                        }
+                    }
+                )
     }
 
+    private func togglePlayback() {
+            guard let midiPlayer = midiPlayer else { return }
+            
+            if isPlaying {
+                midiPlayer.stop()
+            } else {
+                midiPlayer.play {
+                    isPlaying = false
+                    print("MIDI 播放完成")
+                }
+            }
+            isPlaying.toggle()
+        }
+    
     private func listDocumentFiles() {
         let fileManager = FileManager.default
         let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first
@@ -176,8 +203,10 @@ struct Home: View {
             self.midiPlayer = midiPlayer
             midiPlayer.prepareToPlay()
             midiPlayer.play {
+                isPlaying = false
                 print("MIDI 播放完成")
             }
+            isPlaying = true
             print("MIDI 播放成功")
         } catch {
             print("播放 MIDI 文件失败: \(error.localizedDescription)")
